@@ -22,8 +22,6 @@ public class LevelData : ScriptableObject
     public int SpeedElite;
     [Header("該關卡出現菁英防禦型態怪物數量")]
     public int DefendElite;
-    [Header("該關卡出現的小Boss數量")]//直接將三種型態寫在一起，如果該關沒有全部輸入0
-    public int AttackLittleBoss,SpeedLittleBoss,DefendLittleBoss;
     [Header("該關卡出現的Boss")]//要在Boss身上新增另外腳本，當Boss被打死關卡結束
     public GameObject Boss; //數值直接在Boss身上調整
     [Header("關卡波數")]

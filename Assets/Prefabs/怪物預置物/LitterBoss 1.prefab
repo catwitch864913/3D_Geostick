@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4876862547506495763
+--- !u!1 &3349414688577708128
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,37 +8,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5997331667922957551}
-  - component: {fileID: 6458345263846586295}
+  - component: {fileID: 5329012057385452411}
+  - component: {fileID: 6889444029162564591}
   m_Layer: 0
-  m_Name: Croc L Attack 1
+  m_Name: Fly L Attack 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5997331667922957551
+--- !u!4 &5329012057385452411
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4876862547506495763}
+  m_GameObject: {fileID: 3349414688577708128}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 5}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 3938516063144643009}
+  m_Father: {fileID: 8419858708728810706}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &6458345263846586295
+--- !u!212 &6889444029162564591
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4876862547506495763}
+  m_GameObject: {fileID: 3349414688577708128}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -73,8 +73,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 679632dc18fea1b41836afa365d78550, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: d092ddfcd4cec4049a5bb8d9c4908934, type: 3}
+  m_Color: {r: 1, g: 0, b: 0.49824238, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -84,7 +84,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &5358449173992058319
+--- !u!1 &6080368517642548932
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,50 +92,50 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3938516063144643009}
-  - component: {fileID: 6997585089692064190}
-  - component: {fileID: 7998493254849061249}
-  - component: {fileID: 4623548201163471671}
-  - component: {fileID: 6746763255789007995}
-  - component: {fileID: 2659363045717973684}
+  - component: {fileID: 8419858708728810706}
+  - component: {fileID: 5588279424458737893}
+  - component: {fileID: 4102544211917907484}
+  - component: {fileID: 2246433830670699151}
+  - component: {fileID: 4355131858684318613}
+  - component: {fileID: 6016201897291316449}
   m_Layer: 6
-  m_Name: Boss_Croc
+  m_Name: LitterBoss 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3938516063144643009
+--- !u!4 &8419858708728810706
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5358449173992058319}
+  m_GameObject: {fileID: 6080368517642548932}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.253, y: 0.105, z: 0.5550353}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 5997331667922957551}
+  - {fileID: 5329012057385452411}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6997585089692064190
+--- !u!33 &5588279424458737893
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5358449173992058319}
+  m_GameObject: {fileID: 6080368517642548932}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &7998493254849061249
+--- !u!23 &4102544211917907484
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5358449173992058319}
+  m_GameObject: {fileID: 6080368517642548932}
   m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -171,13 +171,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &4623548201163471671
+--- !u!136 &2246433830670699151
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5358449173992058319}
+  m_GameObject: {fileID: 6080368517642548932}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -194,13 +194,13 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6746763255789007995
+--- !u!114 &4355131858684318613
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5358449173992058319}
+  m_GameObject: {fileID: 6080368517642548932}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4b3de786c6727049a75329718b9c973, type: 3}
@@ -213,14 +213,14 @@ MonoBehaviour:
   target: {fileID: 0}
   wavepointIndex: 0
   enemyType: 1
-  monsterType: 1
---- !u!54 &2659363045717973684
+  monsterType: 2
+--- !u!54 &6016201897291316449
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5358449173992058319}
+  m_GameObject: {fileID: 6080368517642548932}
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0

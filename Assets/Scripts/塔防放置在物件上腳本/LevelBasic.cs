@@ -1,35 +1,41 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+[System.Serializable]
+public class BossSpawnData
+{
+    public int waveNumber; // 特定波數
+    public GameObject bossPrefab; // 小Boss預製件
+}
+
+
+
 public class LevelBasic : MonoBehaviour
 {
-    // [Header("重製關卡名字")]
-    // public string LevelName;
+    public bool spawnedBoss;
+    public BossSpawnData[] bossSpawnData;
     #region 抓取檔案以及要被繼承的資料
     [Header("關卡資料結構")]
     public LevelData LevelData;
 
     [Header("要被資料繼承的怪物總數量")]//測試完畢後可以將要繼承的東西全部改成私有private
-    public int EnemyQuantity;
+    private int EnemyQuantity;
     [Header("要繼承出現正常型態怪物數量")]
-    public int NormalEnemy;
+    private int NormalEnemy;
     [Header("要繼承出現速度型態怪物數量")]
-    public int SpeedEnemy;
+    private int SpeedEnemy;
     [Header("要繼承出現防禦型態怪物數量")]
-    public int DefendEnemy;
+    private int DefendEnemy;
     [Header("要繼承出現菁英正常型態怪物數量")]
-    public int NormalElite;
+    private int NormalElite;
     [Header("該關卡出現菁英速度型態怪物數量")]
-    public int SpeedElite;
+    private int SpeedElite;
     [Header("該關卡出現菁英防禦型態怪物數量")]
-    public int DefendElite;
-    [Header("該關卡出現的小Boss數量")]
-    public int AttackLittleBoss, SpeedLittleBoss, DefendLittleBoss;
+    private int DefendElite;
     [Header("該關卡出現的Boss")]
     public GameObject Boss;
     [Header("關卡波數")]
@@ -43,32 +49,34 @@ public class LevelBasic : MonoBehaviour
     #endregion
     #region UI物件
     [Header("UI時間倒數計時器")]
-    public TextMeshProUGUI TimerText;
+    private TextMeshProUGUI TimerText;
     [Header("UI波數說明")]
-    public TextMeshProUGUI WaveText;
+    private TextMeshProUGUI WaveText;
     [Header("UI金幣")]
-    public TextMeshProUGUI GoldCoinWallet;
+    private TextMeshProUGUI GoldCoinWallet;
     [Header("UI核心血量")]
-    public TextMeshProUGUI CoreHPUI;
+    private TextMeshProUGUI CoreHPUI;
     [Header("UI過關視窗")]
+    [HideInInspector]
     public GameObject WinPanel;
     [Header("UI失敗視窗")]
-    public GameObject LoserPanel;
+    private GameObject LoserPanel;
     [Header("暫停視窗")]
-    public GameObject StopPanel;
-    [Header("1開始按鈕,2直接下一波按鈕,3暫停按鈕")]
-    public Button StartButton;
-    public Button NextWaveButton;
-    public Button StopButton;
+    private GameObject StopPanel;
+    [Header("1開始按鈕,2直接下一波按鈕,3暫停按鈕,4暫停介面中關閉暫停按鈕")]
+    private Button StartButton;
+    private Button NextWaveButton;
+    private Button StopButton;
+    private Button CloseButton;
     [Header("抓取重進遊戲的按鈕")]
-    public Button[] ResetButton;
-    public GameObject[] buttonObjects;
+    private Button[] ResetButton;
+    private GameObject[] buttonObjects;
     [Header("抓取回到首頁的按鈕")]
-    public Button[] MenuButton;
-    public GameObject[] ObjMenuButton;
+    private Button[] MenuButton;
+    private GameObject[] ObjMenuButton;
     [Header("按鈕物件用來隱藏")]
-    public GameObject ObjStartButton;
-    public GameObject ObjNextWaveButton;
+    private GameObject ObjStartButton;
+    private GameObject ObjNextWaveButton;
     //public GameObject ObjStopButton;
     #endregion
     #region 怪物預置物，以及設置怪物生成點
@@ -78,18 +86,15 @@ public class LevelBasic : MonoBehaviour
     // 3 菁英正常型態怪物
     // 4 菁英速度型態怪物
     // 5 菁英防禦型態怪物
-    // 6 攻擊型態小Boss    此處需考慮小Boss出現方式是否跟Boss一樣
-    // 7 速度型態小Boss
-    // 8 防禦型態小Boss
-    // Boss寫在上方的繼承資料內
-    [Header("怪物預置物陣列，腳本內有詳細順序，共需要9格")]
-    public GameObject[] Monsters = new GameObject[9];
+    //小Boss與Boss另外寫法
+    [Header("怪物預置物陣列，腳本內有詳細順序，共需要6格，不包含小Boss")]
+    public GameObject[] Monsters = new GameObject[6];
 
     [Header("怪物生成點")]
-    public GameObject MonsterSpawnPoint;
+    public GameObject MonsterSpawnPoint1, MonsterSpawnPoint2, MonsterSpawnPoint3;
     #endregion
     #region 核心、砲台、城牆
-    public GameObject Core;
+    //public GameObject Core;
     #endregion
 
 
@@ -107,19 +112,18 @@ public class LevelBasic : MonoBehaviour
         this.NormalElite = LevelData.NormalElite;
         this.SpeedElite = LevelData.SpeedElite;
         this.DefendElite = LevelData.DefendElite;
-        this.AttackLittleBoss = LevelData.AttackLittleBoss;
-        this.SpeedLittleBoss = LevelData.SpeedLittleBoss;
-        this.DefendLittleBoss = LevelData.DefendLittleBoss;
         this.Boss = LevelData.Boss;
         this.wave = LevelData.wave;
         this.EnemyWave = LevelData.EnemyWave;
         this.CoreHP = LevelData.CoreHP;
         this.Coin = LevelData.Coin;
-        UpdateCoinWallet();
-        UpdateCoreHP();
         #endregion
 
         #region UI按鈕、介面 靠程式抓取   這個需要全部開啟才能被抓取，如果關閉會抓取不到
+        TimerText = GameObject.Find("CountDownTime").GetComponent<TextMeshProUGUI>();
+        WaveText = GameObject.Find("Wave").GetComponent<TextMeshProUGUI>();
+        GoldCoinWallet = GameObject.Find("GoldCoin").GetComponent<TextMeshProUGUI>();
+        CoreHPUI = GameObject.Find("CoreHP").GetComponent<TextMeshProUGUI>();
         WinPanel = GameObject.Find("WinPanel");
         LoserPanel = GameObject.Find("LoserPanel");
         StopPanel = GameObject.Find("StopPanel");
@@ -129,6 +133,7 @@ public class LevelBasic : MonoBehaviour
         StartButton = GameObject.Find("StartButton").GetComponent<Button>();
         NextWaveButton = GameObject.Find("NextWaveButton").GetComponent<Button>();
         StopButton = GameObject.Find("StopButton").GetComponent<Button>();
+        CloseButton = GameObject.Find("Close_Button").GetComponent<Button>();
         buttonObjects = GameObject.FindGameObjectsWithTag("ReLevelButton");
         ResetButton = new Button[buttonObjects.Length];
         for (int i = 0; i < buttonObjects.Length; i++)
@@ -145,7 +150,11 @@ public class LevelBasic : MonoBehaviour
         #endregion
 
         #region 陣列抓取敵人數量、設定怪物重生點
-        MonsterSpawnPoint = GameObject.Find("MonsterSpawnPos");
+        MonsterSpawnPoint1 = GameObject.Find("MonsterSpawnPos1");
+        /*if (MonsterSpawnPoint2 = GameObject.Find("MonsterSpawnPos2") = null)
+        {
+
+        }*/
         // 先將可用的怪物類型加入到 availableEnemies 中
         remainingEnemies = new int[6];
         remainingEnemies[0] = this.NormalEnemy;
@@ -175,16 +184,19 @@ public class LevelBasic : MonoBehaviour
         ObjNextWaveButton.SetActive(false);
         StartButton.onClick.AddListener(StartGame);
         NextWaveButton.onClick.AddListener(ClickNextWave);
-        StopButton.onClick.AddListener(UpdateStopPanel);
+        StopButton.onClick.AddListener(ClickStopButtom);
+        CloseButton.onClick.AddListener(ClickStopButtom);
         for (int i = 0; i < ResetButton.Length; i++)
         {
-            ResetButton[i].onClick.AddListener(ResetLevel) ;
+            ResetButton[i].onClick.AddListener(ResetLevel);
         }
         for (int i = 0; i < MenuButton.Length; i++)
         {
             MenuButton[i].onClick.AddListener(ToMenu);
         }
         #endregion
+        UpdateCoinWallet();
+        UpdateCoreHP();
     }
 
     void Update()
@@ -238,46 +250,72 @@ public class LevelBasic : MonoBehaviour
                     int randomIndex = Random.Range(0, availableEnemies.Count);
                     int enemyType = availableEnemies[randomIndex];
 
+                    
+                    // 隨機選擇一個生成位置，可以是兩個點位中的一個
+                    //Vector3 spawnPosition = Random.Range(0, 2) == 0 ? MonsterSpawnPoint1.transform.position : MonsterSpawnPoint2.transform.position;
+                    Vector3 spawnPosition;
+                    /*int spawnPointIndex = Random.Range(0, 3);
+                    switch (spawnPointIndex)
+                    {
+                        case 0:
+                            spawnPosition = MonsterSpawnPoint1.transform.position;
+                            break;
+                        case 1:
+                            spawnPosition = MonsterSpawnPoint2.transform.position;
+                            break;
+                        case 2:
+                            spawnPosition = MonsterSpawnPoint3.transform.position;
+                            break;
+                        default:
+                            spawnPosition = Vector3.zero; // 預設位置
+                            break;
+                    }*/
                     switch (enemyType)
                     {
                         case 0:
                             // 生成正常型態怪物
-                            Instantiate(Monsters[0], MonsterSpawnPoint.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[0], MonsterSpawnPoint1.transform.position, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[0]--;
                             break;
                         case 1:
                             // 生成速度型態怪物
-                            Instantiate(Monsters[1], MonsterSpawnPoint.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[1], MonsterSpawnPoint1.transform.position, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[1]--;
                             break;
                         case 2:
                             // 生成防禦型態怪物
-                            Instantiate(Monsters[2], MonsterSpawnPoint.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[2], MonsterSpawnPoint1.transform.position, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[2]--;
                             break;
                         case 3:
                             // 生成正常型態的菁英怪物
-                            Instantiate(Monsters[3], MonsterSpawnPoint.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[3], MonsterSpawnPoint1.transform.position, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[3]--;
                             break;
                         case 4:
                             // 生成速度型態怪物
-                            Instantiate(Monsters[4], MonsterSpawnPoint.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[4], MonsterSpawnPoint1.transform.position, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[4]--;
                             break;
                         case 5:
                             // 生成防禦型態怪物
-                            Instantiate(Monsters[5], MonsterSpawnPoint.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[5], MonsterSpawnPoint1.transform.position, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[5]--;
                             break;
                     }
-
+                    if (ShouldSpawnBoss(currentWave) && !spawnedBoss) // 檢查是否需要生成小Boss
+                    {
+                        Debug.LogWarning("我有生成小Boss喔");
+                        GameObject bossPrefab = GetBossPrefabForWave(currentWave);
+                        Instantiate(bossPrefab, MonsterSpawnPoint1.transform.position, Quaternion.identity);
+                        spawnedBoss = true;
+                    }
 
                     // 如果該類型的怪物剩餘數量為0，從可用怪物列表中移除
                     if (remainingEnemies[enemyType] == 0)
@@ -288,7 +326,7 @@ public class LevelBasic : MonoBehaviour
                 }
                 else
                 {
-                    print("我因該跑步到這裡，我在這除錯用");
+                    print("我應該跑不到這裡，我在這除錯用");
                 }
             }
             if (availableEnemies.Count != 0)
@@ -296,13 +334,14 @@ public class LevelBasic : MonoBehaviour
                 print("怪物還有你還可以在執行");
                 WaveCompleted();
                 currentWave++;
+                // 在生成完怪物後，將 spawnedBoss 設為 false
+                spawnedBoss = false;
                 //UpdateWave();
             }
             else
             {
                 print("我要生成Boss");
-                Instantiate(Boss, MonsterSpawnPoint.transform.position, Quaternion.identity);
-
+                Instantiate(Boss, MonsterSpawnPoint1.transform.position, Quaternion.identity);
             }
         }
     }
@@ -319,7 +358,7 @@ public class LevelBasic : MonoBehaviour
         ObjNextWaveButton.SetActive(false);
         Time.timeScale = 1f;
     }
-    #region 測試協成Bug用
+    #region 測試協成DeBug用
     /*Coroutine a;
     
     IEnumerator 我是測試協成()
@@ -387,6 +426,43 @@ public class LevelBasic : MonoBehaviour
         ObjNextWaveButton.SetActive(false);
         UpdateWave();
     }
+
+
+
+    private bool ShouldSpawnBoss(int waveNumber)
+    {
+        foreach (var bossData in bossSpawnData)
+        {
+            if (bossData.waveNumber == waveNumber)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    private GameObject GetBossPrefabForWave(int waveNumber)
+    {
+        foreach (var bossData in bossSpawnData)
+        {
+            if (bossData.waveNumber == waveNumber)
+            {
+                return bossData.bossPrefab;
+            }
+        }
+        return null;
+    }
+
+
+
+
+
+
+
+
+
+
+
+    #region 更新錢包、波數、血量等
     ///更新金幣
     public void UpdateCoinWallet()
     {
@@ -400,9 +476,10 @@ public class LevelBasic : MonoBehaviour
     {
         CoreHPUI.text = "核心血量：" + CoreHP.ToString();
     }
-
+    #endregion
+    #region 按鈕類腳本，內包含暫停介面按鈕、下一波、回到主選單、重新遊玩
     bool OpenStopPanel = false;
-    public void UpdateStopPanel()
+    public void ClickStopButtom()
     {
         OpenStopPanel = !OpenStopPanel;
         StopPanel.SetActive(OpenStopPanel);
@@ -415,13 +492,11 @@ public class LevelBasic : MonoBehaviour
             Time.timeScale = 1;
         }
     }
-
     public void ClickNextWave()
     {
         print("開始下一波");
         //暫停倒數下一波協成
         StopCoroutine(NextCoroutine);
-        //print(StopCoroutine(WaitAndSpawnNextWave()));
         NextCoroutine = StartCoroutine(SpawnNextWave());
         UpdateWave();
         countdownTime = 10;
@@ -440,7 +515,7 @@ public class LevelBasic : MonoBehaviour
     {
         SceneManager.LoadScene("Menu");
     }
-
+    #endregion
 
     //GM不可以寫這個 該段須寫在核心或是怪物腳本身上
     /*private void OnTriggerEnter(Collider other)

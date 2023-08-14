@@ -20,10 +20,7 @@ MonoBehaviour:
   NormalElite: 6
   SpeedElite: 3
   DefendElite: 3
-  AttackLittleBoss: 1
-  SpeedLittleBoss: 0
-  DefendLittleBoss: 0
-  Boss: {fileID: 4702687749052737625, guid: 55339a8c2edc9444b9c5c85c8bd6a4f0, type: 3}
+  Boss: {fileID: 5358449173992058319, guid: 07ace6770d236844da188a2f13492de9, type: 3}
   wave: 4
   EnemyWave: 0a0000000f0000001400000019000000
   CoreHP: 10
