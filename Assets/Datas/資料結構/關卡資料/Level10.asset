@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6d3bbb79756e03459546528d861aff7, type: 3}
+  m_Name: Level10
+  m_EditorClassIdentifier: 
+  Level: 10
+  EnemyQuantity: 200
+  NormalEnemy: 60
+  SpeedEnemy: 25
+  DefendEnemy: 25
+  NormalElite: 50
+  SpeedElite: 20
+  DefendElite: 20
+  AttackLittleBoss: 1
+  SpeedLittleBoss: 1
+  DefendLittleBoss: 1
+  Boss: {fileID: 0}
+  wave: 10
+  EnemyWave: 050000000a0000000f0000001400000014000000190000001900000019000000190000001e000000
+  CoreHP: 10
+  Coin: 550
