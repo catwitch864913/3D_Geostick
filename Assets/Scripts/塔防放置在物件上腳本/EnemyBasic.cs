@@ -1,51 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro.EditorUtilities;
-using Unity.VisualScripting;
+﻿using TMPro;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
-public class EnemyBasic : MonoBehaviour
+public class EnemyBasic : MonsterFather
 {
-    [Header("被繼承的關卡程式")]
-    public LevelBasic levelBasic;
 
-    [Header("怪物資料")]
-    public EnemyData data;
 
-    [Header("要被資料繼承的血量")]
-    public float Hp;
-    [Header("要被繼承的移動速度")]
-    public float Speed;
-    [Header("行走路線")]//測試完畢可以改成privite
-    public Transform target;
-    [Header("當前走到了哪一格")]
-    public int wavepointIndex = 0;
-    [Header("該怪物的型態")]
-    public EnemyType enemyType;
-    [Header("該怪物種類")]
-    public MonsterType monsterType;
-    private void Awake()
+    public void Awake()
     {
         levelBasic = GameObject.Find("GM").GetComponent<LevelBasic>();
         Hp = data.HP;
         Speed = data.Speed;
+        rb = GetComponent<Rigidbody>();
+        myAnimator = GetComponent<Animator>();
+        //小怪是否要抓取??
+        //MonsterName = GameObject.Find("Name").GetComponent<TextMeshProUGUI>();
+        //MonsterHp = GameObject.Find("HPText").GetComponent<TextMeshProUGUI>();
     }
     private void Start()
     {
         target = Waypoints.points[0]; // 目標 = 路徑點
 
     }
-    private void Update()
+    public void Update()
     {
-        /*if (enemyType == EnemyType.NormalEnemy)
-        {
-            levelBasic.NormalEnemy--;
-        }*/
         #region 外掛
         if (Input.GetKeyDown(KeyCode.X))
         {
-            Hp = 0;
+            Hp -= 5;
         }
         #endregion
 
@@ -60,64 +41,83 @@ public class EnemyBasic : MonoBehaviour
         {
             Dead();
         }
-    }
-    void GetNextWaypoint()
-    {
-        if (wavepointIndex >= Waypoints.points.Length - 1) // 到達核心就消失（目前）
+        if (isPoisoned) // 敵人中毒
         {
-            if (monsterType == MonsterType.Boss)
+            PoisonTime -= Time.deltaTime;
+            gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.09f, 0.8f, 0.09f, 1);
+            // Debug.Log("time" + PoisonTime);
+            if (PoisonTime <= 0)
             {
-                levelBasic.CoreHP -= 10;
-                levelBasic.UpdateCoreHP();
-                Destroy(gameObject);
+                Hp -= 5;
+                Debug.Log(Hp);
+                PoisonCount -= 1;
+                PoisonTime = 1;
             }
-            else
+            if (PoisonCount <= 0)
             {
-                levelBasic.CoreHP--;
-                levelBasic.UpdateCoreHP();
-                Destroy(gameObject);
+                gameObject.GetComponent<MeshRenderer>().material.color = Color.white;
+                isPoisoned = false;
+                PoisonTime = 1;
             }
-            return;
         }
-
-        wavepointIndex++;
-        target = Waypoints.points[wavepointIndex];
+        if (colorchanged) // 顏色改變（敵人受傷）
+        {
+            changetime -= Time.deltaTime;
+            if (changetime <= 0)
+            {
+                gameObject.GetComponent<MeshRenderer>().material.color = Color.white;
+                changetime = 0.2f;
+                colorchanged = false;
+            }
+        }
+        //UpdateMonsterHp();
     }
-
-
-
-
-
-
-
-    private void Dead()
+    public void OnCollisionEnter(Collision other) // 碰撞
     {
-        if (monsterType == MonsterType.CommonEnemy)
-        {
-            levelBasic.Coin += 10;
-            levelBasic.UpdateCoinWallet();
-            Destroy(gameObject);
-        }
-        else if (monsterType == MonsterType.EliteEnemy)
-        {
-            levelBasic.Coin += 20;
-            levelBasic.UpdateCoinWallet();
-            Destroy(gameObject);
-        }
-        else if (monsterType == MonsterType.LittleBoss)
-        {
-            levelBasic.Coin += 100;
-            levelBasic.UpdateCoinWallet();
-            Destroy(gameObject);
-        }
-        else if (monsterType == MonsterType.Boss)
-        {
-            print("我打敗Boss了，我可以通關了");
-            levelBasic.WinPanel.SetActive(true);
-            Time.timeScale = 0f;
-            Destroy(gameObject);
-        }
-
+        Debug.Log("觸發碰撞事件");
     }
+    public void OnCollisionStay(Collision other) // 碰撞
+    {
 
+        AttackingTime -= Time.deltaTime;
+        if (AttackingTime <= 0)
+        {
+            switch (other.gameObject.tag)
+            {
+                case "Wall_Burn":
+                    other.gameObject.GetComponent<Wall>().HP -= 1;
+                    Hp -= 10;
+                    gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 0.3f, 0.3f, 1);
+                    colorchanged = true;
+                    AttackingTime = 1;
+                    if (other.gameObject == null)
+                    {
+                        AttackingTime = 1;
+                    }
+                    break;
+                case "Wall_Poison":
+                    isPoisoned = true;
+                    PoisonCount = 5;
+                    other.gameObject.GetComponent<Wall>().HP -= 1;
+                    AttackingTime = 1;
+                    break;
+                case "Wall_Normal":
+                    other.gameObject.GetComponent<Wall>().HP -= 1;
+                    AttackingTime = 1;
+                    break;
+            }
+            AttackingTime = 1;
+            myAnimator.SetBool("Attack", false);
+
+        }
+        if (other.gameObject.GetComponent<Wall>().HP <= 0)
+        {
+            myAnimator.SetBool("Attack", false);
+        }
+    }
+    public void OnCollisionExit(Collision other)
+    {
+        AttackingTime = 1;
+        myAnimator.SetBool("Attack", false);
+    }
 }

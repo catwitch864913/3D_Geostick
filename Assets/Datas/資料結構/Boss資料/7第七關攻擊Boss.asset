@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyName: "\u7834\u58DE\u8005\u6578\u5B78\u9818\u4E3B"
   HP: 700
-  Speed: 0.5
+  Speed: 0.1

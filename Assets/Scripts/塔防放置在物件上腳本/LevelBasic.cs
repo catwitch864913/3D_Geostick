@@ -90,7 +90,7 @@ public class LevelBasic : MonoBehaviour
     [Header("怪物預置物陣列，腳本內有詳細順序，共需要6格，不包含小Boss")]
     public GameObject[] Monsters = new GameObject[6];
 
-    [Header("怪物生成點")]
+    [Header("怪物生成點，如果該關卡只有1個重生點複製同樣位置，改名就好")]
     public GameObject MonsterSpawnPoint1, MonsterSpawnPoint2, MonsterSpawnPoint3;
     #endregion
     #region 核心、砲台、城牆
@@ -151,10 +151,8 @@ public class LevelBasic : MonoBehaviour
 
         #region 陣列抓取敵人數量、設定怪物重生點
         MonsterSpawnPoint1 = GameObject.Find("MonsterSpawnPos1");
-        /*if (MonsterSpawnPoint2 = GameObject.Find("MonsterSpawnPos2") = null)
-        {
-
-        }*/
+        MonsterSpawnPoint2 = GameObject.Find("MonsterSpawnPos2");
+        MonsterSpawnPoint3 = GameObject.Find("MonsterSpawnPos3");
         // 先將可用的怪物類型加入到 availableEnemies 中
         remainingEnemies = new int[6];
         remainingEnemies[0] = this.NormalEnemy;
@@ -201,7 +199,6 @@ public class LevelBasic : MonoBehaviour
 
     void Update()
     {
-        //Debug.LogWarning(countdownTime);
         #region 外掛
         if (Input.GetKeyDown(KeyCode.Z))
         {
@@ -209,6 +206,7 @@ public class LevelBasic : MonoBehaviour
             UpdateCoreHP();
         }
         #endregion
+        #region 波數倒數計時器
         if (countdownStart)
         {
             TimerText.gameObject.SetActive(true);
@@ -222,12 +220,14 @@ public class LevelBasic : MonoBehaviour
         {
             TimerText.gameObject.SetActive(false);
         }
-
+        #endregion
+        #region 核心血量判斷
         if (CoreHP <= 0)
         {
             LoserPanel.SetActive(true);
             Time.timeScale = 0;
         }
+        #endregion
     }
     [Header("目前第幾波")]
     public int currentWave = 0; // 目前的波數索引
@@ -236,10 +236,13 @@ public class LevelBasic : MonoBehaviour
 
     [Header("當每種怪物數量>0時該處便會擁有陣列")]
     public List<int> availableEnemies = new List<int>();
+
+    public float[] enemySpawnProbabilities;
+
     // 呼叫此方法生成下一波怪物
     public IEnumerator SpawnNextWave()
     {
-        if (currentWave < wave)
+        /*if (currentWave < wave)
         {
             int totalEnemies = EnemyWave[currentWave];
             // 隨機抽取怪物類型並生成
@@ -249,12 +252,9 @@ public class LevelBasic : MonoBehaviour
                 {
                     int randomIndex = Random.Range(0, availableEnemies.Count);
                     int enemyType = availableEnemies[randomIndex];
-
                     
-                    // 隨機選擇一個生成位置，可以是兩個點位中的一個
-                    //Vector3 spawnPosition = Random.Range(0, 2) == 0 ? MonsterSpawnPoint1.transform.position : MonsterSpawnPoint2.transform.position;
                     Vector3 spawnPosition;
-                    /*int spawnPointIndex = Random.Range(0, 3);
+                    int spawnPointIndex = Random.Range(0, 3);
                     switch (spawnPointIndex)
                     {
                         case 0:
@@ -269,42 +269,42 @@ public class LevelBasic : MonoBehaviour
                         default:
                             spawnPosition = Vector3.zero; // 預設位置
                             break;
-                    }*/
+                    }
                     switch (enemyType)
                     {
                         case 0:
                             // 生成正常型態怪物
-                            Instantiate(Monsters[0], MonsterSpawnPoint1.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[0], spawnPosition, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[0]--;
                             break;
                         case 1:
                             // 生成速度型態怪物
-                            Instantiate(Monsters[1], MonsterSpawnPoint1.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[1], spawnPosition, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[1]--;
                             break;
                         case 2:
                             // 生成防禦型態怪物
-                            Instantiate(Monsters[2], MonsterSpawnPoint1.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[2], spawnPosition, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[2]--;
                             break;
                         case 3:
                             // 生成正常型態的菁英怪物
-                            Instantiate(Monsters[3], MonsterSpawnPoint1.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[3], spawnPosition, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[3]--;
                             break;
                         case 4:
                             // 生成速度型態怪物
-                            Instantiate(Monsters[4], MonsterSpawnPoint1.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[4], spawnPosition, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[4]--;
                             break;
                         case 5:
                             // 生成防禦型態怪物
-                            Instantiate(Monsters[5], MonsterSpawnPoint1.transform.position, Quaternion.identity);
+                            Instantiate(Monsters[5], spawnPosition, Quaternion.identity);
                             // 減去剩餘數量
                             remainingEnemies[5]--;
                             break;
@@ -313,7 +313,7 @@ public class LevelBasic : MonoBehaviour
                     {
                         Debug.LogWarning("我有生成小Boss喔");
                         GameObject bossPrefab = GetBossPrefabForWave(currentWave);
-                        Instantiate(bossPrefab, MonsterSpawnPoint1.transform.position, Quaternion.identity);
+                        Instantiate(bossPrefab, spawnPosition, Quaternion.identity);
                         spawnedBoss = true;
                     }
 
@@ -340,13 +340,117 @@ public class LevelBasic : MonoBehaviour
             }
             else
             {
+                // 隨機選擇一個生成位置，可以是兩個點位中的一個
+                Vector3 spawnPosition = Random.Range(0, 2) == 0 ? MonsterSpawnPoint1.transform.position : MonsterSpawnPoint2.transform.position;
                 print("我要生成Boss");
-                Instantiate(Boss, MonsterSpawnPoint1.transform.position, Quaternion.identity);
+                Instantiate(Boss, spawnPosition, Quaternion.identity);
+                print(spawnPosition);
+            }
+        }*/
+
+        
+        if (currentWave < wave)
+        {
+            int totalEnemies = EnemyWave[currentWave];
+
+            // 計算每個敵人類型的生成機率
+            enemySpawnProbabilities = new float[remainingEnemies.Length];
+            float totalProbability = 0;
+
+            for (int i = 0; i < remainingEnemies.Length; i++)
+            {
+                totalProbability += remainingEnemies[i];
+                enemySpawnProbabilities[i] = totalProbability;
+            }
+
+            // 隨機抽取怪物類型並生成
+            for (int i = 0; i < totalEnemies; i++)
+            {
+                if (availableEnemies.Count > 0)
+                {
+                    Vector3 spawnPosition;
+                    int spawnPointIndex = Random.Range(0, 3);
+                    switch (spawnPointIndex)
+                    {
+                        case 0:
+                            spawnPosition = MonsterSpawnPoint1.transform.position;
+                            break;
+                        case 1:
+                            spawnPosition = MonsterSpawnPoint2.transform.position;
+                            break;
+                        case 2:
+                            spawnPosition = MonsterSpawnPoint3.transform.position;
+                            break;
+                        default:
+                            spawnPosition = Vector3.zero; // 預設位置
+                            break;
+                    }
+                    // 隨機生成機率值，決定生成哪個怪物
+                    float randomProbability = Random.Range(0, totalProbability);
+                    int enemyType = 0;
+
+                    for (int j = 0; j < enemySpawnProbabilities.Length; j++)
+                    {
+                        if (randomProbability < enemySpawnProbabilities[j])
+                        {
+                            enemyType = j;
+                            break;
+                        }
+                    }
+
+                    // 根據生成的怪物類型生成怪物
+                    Instantiate(Monsters[enemyType], spawnPosition, Quaternion.identity);
+                    remainingEnemies[enemyType]--;
+
+                    // 更新機率總和
+                    totalProbability = 0;
+                    for (int j = 0; j < remainingEnemies.Length; j++)
+                    {
+                        totalProbability += remainingEnemies[j];
+                        enemySpawnProbabilities[j] = totalProbability;
+                    }
+                    if (ShouldSpawnBoss(currentWave) && !spawnedBoss) // 檢查是否需要生成小Boss
+                    {
+                        Debug.LogWarning("我有生成小Boss喔");
+                        GameObject bossPrefab = GetBossPrefabForWave(currentWave);
+                        Instantiate(bossPrefab, spawnPosition, Quaternion.identity);
+                        spawnedBoss = true;
+                    }
+
+                    // 如果該類型的怪物剩餘數量為0，從可用怪物列表中移除
+                    if (remainingEnemies[enemyType] == 0)
+                    {
+                        availableEnemies.Remove(enemyType);
+                    }
+                    yield return new WaitForSeconds(0.5f);
+                }
+                else
+                {
+                    print("我應該跑不到這裡，我在這除錯用");
+                }
+            }
+
+            if (availableEnemies.Count != 0)
+            {
+                print("怪物還有你還可以在執行");
+                WaveCompleted();
+                currentWave++;
+                // 在生成完怪物後，將 spawnedBoss 設為 false
+                spawnedBoss = false;
+                //UpdateWave();
+            }
+            else
+            {
+                // 隨機選擇一個生成位置，可以是兩個點位中的一個
+                Vector3 spawnPosition = Random.Range(0, 2) == 0 ? MonsterSpawnPoint1.transform.position : MonsterSpawnPoint2.transform.position;
+                print("我要生成Boss");
+                Instantiate(Boss, spawnPosition, Quaternion.identity);
+                print(spawnPosition);
             }
         }
     }
     Coroutine NextCoroutine;
-    //Coroutine WaveWaitCoroutine;
+    Coroutine WaveWaitCoroutine;
     // 呼叫此方法開始遊戲
     public void StartGame()
     {
@@ -405,7 +509,7 @@ public class LevelBasic : MonoBehaviour
     // 呼叫此方法在下一波的怪物數量為0時進行等待，然後生成下一波怪物
     public void WaveCompleted()
     {
-        StartCoroutine(WaitAndSpawnNextWave());
+        WaveWaitCoroutine= StartCoroutine(WaitAndSpawnNextWave());
     }
 
 
@@ -428,7 +532,7 @@ public class LevelBasic : MonoBehaviour
     }
 
 
-
+    #region 判斷生成小Boss
     private bool ShouldSpawnBoss(int waveNumber)
     {
         foreach (var bossData in bossSpawnData)
@@ -451,7 +555,7 @@ public class LevelBasic : MonoBehaviour
         }
         return null;
     }
-
+    #endregion
 
 
 
@@ -496,12 +600,13 @@ public class LevelBasic : MonoBehaviour
     {
         print("開始下一波");
         //暫停倒數下一波協成
+        StopCoroutine(WaveWaitCoroutine);
         StopCoroutine(NextCoroutine);
-        NextCoroutine = StartCoroutine(SpawnNextWave());
         UpdateWave();
         countdownTime = 10;
         countdownStart = false;
         ObjNextWaveButton.SetActive(false);
+        NextCoroutine = StartCoroutine(SpawnNextWave());
     }
 
     public void ResetLevel()
