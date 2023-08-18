@@ -59,6 +59,16 @@ public class BossBasic : MonsterFather
     }
     public void Update()
     {
+        #region ¥~±¾
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            Hp -= 5;
+        }
+        #endregion
+        if (Hp <= 0)
+        {
+            Dead();
+        }
         UpdateMonsterHp();
     }
 
